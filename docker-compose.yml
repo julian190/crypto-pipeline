@@ -1,0 +1,12 @@
+services:
+  #postgersql
+  postgresSQL:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "Crypto"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./Data/postgresData:/var/lib/postgresql
