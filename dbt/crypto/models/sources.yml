@@ -1,0 +1,7 @@
+version: 2
+
+sources:
+  - name: crypto
+    schema: raw
+    tables:
+      - name: crypto_data

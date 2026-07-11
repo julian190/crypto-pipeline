@@ -1,0 +1,9 @@
+==================== 2026-07-04T10:02:17.140604Z | 019f2c94-30b2-7103-a49f-f1a005704fdf ====================
+10:02:17.140760 [info ]: Installing dbt project and profile setup
+10:02:17.156479 [info ]: Info Created .vscode/extensions.json with dbt extension recommendation
+10:02:17.156703 [info ]: Success Project created successfully!
+10:02:17.156802 [info ]: Info Project name: jaffle_shop
+10:02:17.156906 [info ]: Info Project directory: jaffle_shop
+10:02:17.157024 [info ]: Info Setting up your profile...
+10:02:17.157655 [info ]: Loading ~/.dbt/profiles.yml
+10:02:17.158338 [info ]: Profile 'jaffle_shop' already exists. You can choose how to proceed.
