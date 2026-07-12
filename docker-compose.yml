@@ -10,3 +10,57 @@ services:
       - "5432:5432"
     volumes:
       - ./Data/postgresData:/var/lib/postgresql
+
+  # Airflow Init (Runs migrations automatically and exits)
+  airflow-init:
+    image: apache/airflow:2.10.2
+    container_name: crypto_airflow_init
+    command: >
+      bash -c "airflow db migrate && airflow users create --username admin --password admin --firstname Julian --lastname Metias --role Admin --email julian@jmetias.nz"
+
+    depends_on:
+      - postgresSQL
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:postgres@postgresSQL:5432/Crypto
+  airflow-webserver:
+    image: apache/airflow:2.10.2
+    container_name: crypto_airflow_webserver
+    restart: always
+    command: webserver
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully # <--- Waits for migrations to finish completely
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:postgres@postgresSQL:5432/Crypto
+      - _PIP_ADDITIONAL_REQUIREMENTS=pandas requests sqlalchemy psycopg2-binary python-dotenv dbt-postgres
+      - databaseURL=postgresql://postgres:postgres@postgresSQL:5432/Crypto
+      - DBT_HOST=postgresSQL
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./extract:/opt/airflow/extract
+      - ./load:/opt/airflow/load
+      - ./dbt:/opt/airflow/dbt
+  # Airflow Scheduler (The Engine that runs your tasks)
+  airflow-scheduler:
+    image: apache/airflow:2.10.2
+    container_name: crypto_airflow_scheduler
+    restart: always
+    command: scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully # <--- Waits for migrations to finish completely
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:postgres@postgresSQL:5432/Crypto
+      - _PIP_ADDITIONAL_REQUIREMENTS=pandas requests sqlalchemy psycopg2-binary python-dotenv dbt-postgres
+      - databaseURL=postgresql://postgres:postgres@postgresSQL:5432/Crypto
+      - DBT_HOST=postgresSQL
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./extract:/opt/airflow/extract
+      - ./load:/opt/airflow/load
+      - ./dbt:/opt/airflow/dbt

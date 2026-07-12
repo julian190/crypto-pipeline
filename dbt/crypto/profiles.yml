@@ -1,0 +1,12 @@
+crypto:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      port: 5432
+      database: Crypto
+      schema: dbt
+      threads: 16
+      host: "{{ env_var('DBT_HOST', 'localhost') }}"
+      user: postgres
+      password: postgres
