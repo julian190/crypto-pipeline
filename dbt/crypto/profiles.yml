@@ -9,4 +9,4 @@ crypto:
       threads: 16
       host: "{{ env_var('DBT_HOST', 'localhost') }}"
       user: postgres
-      password: postgres
+      password: "{{ env_var('POSTGRES_PASSWORD', 'postgres') }}"
