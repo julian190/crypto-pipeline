@@ -11,7 +11,7 @@ name                  as coin_name,
 
 -- Prices (Cast as numtic)
 CAST(current_price AS numeric) as current_price_nzd,
-CAST(low_24h AS numeric) as low_24h_ndz,
+CAST(low_24h AS numeric) as low_24h_nzd,
 CAST(high_24h AS numeric) as high_24_nzd,
 CAST(price_change_24h AS numeric) as price_change_24h_nzd,
 

@@ -12,10 +12,10 @@ select
     coin_id,
     coin_name,
     current_price_nzd,
-    low_24h_ndz,
+    low_24h_nzd,
     high_24_nzd
 from {{ ref('stg_crypto_data') }}
 where
     current_price_nzd < 0
-    or (low_24h_ndz  is not null and low_24h_ndz  < 0)
+    or (low_24h_nzd  is not null and low_24h_nzd  < 0)
     or (high_24_nzd  is not null and high_24_nzd  < 0)

@@ -33,14 +33,14 @@ models:
               arguments:
                 expression: "> 0"
 
-      - name: low_24h_ndz
+      - name: low_24h_nzd
         description: 24-hour low price in NZD. May be null for newly listed coins.
         tests:
           - dbt_utils.expression_is_true:
               arguments:
                 expression: ">= 0"
               config:
-                where: "low_24h_ndz is not null"
+                where: "low_24h_nzd is not null"
 
       - name: high_24_nzd
         description: 24-hour high price in NZD. May be null for newly listed coins.
