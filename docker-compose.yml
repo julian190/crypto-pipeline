@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./Data/postgresData:/var/lib/postgresql/data
+      - ./Data/postgresData:/var/lib/postgresql/data/18
 
   # Airflow Init (Runs migrations automatically and exits)
   airflow-init:
