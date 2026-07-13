@@ -1,0 +1,70 @@
+version: 2
+
+models:
+  - name: fct_crypto_prices
+    description: >
+      Mart-level fact table containing key cryptocurrency price metrics.
+      Derived columns include is_top_10 (boolean) and price_direction
+      (up / down / flat) based on the 24-hour percentage price change.
+
+    columns:
+      - name: coin_id
+        description: Unique CoinGecko coin identifier.
+        tests:
+          - not_null
+          - unique
+
+      - name: coin_symbol
+        description: Coin ticker symbol.
+        tests:
+          - not_null
+
+      - name: coin_name
+        description: Human-readable coin name.
+        tests:
+          - not_null
+
+      - name: current_price_nzd
+        description: Current price of the coin in NZD.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+
+      - name: market_cap_rank
+        description: CoinGecko market cap rank. 1 = largest by market cap.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+
+      - name: price_change_pct_24h
+        description: Percentage price change over the last 24 hours.
+
+      - name: is_top_10
+        description: >
+          True when the coin's market_cap_rank is 10 or lower,
+          indicating it is in the top-10 coins by market capitalisation.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: price_direction
+        description: >
+          Direction of the 24-hour price change.
+          'up' when price_change_pct_24h > 0,
+          'down' when < 0, 'flat' when exactly 0.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['up', 'down', 'flat']
+
+      - name: ingested_at
+        description: Timestamp when this row was loaded into the data warehouse.
+        tests:
+          - not_null

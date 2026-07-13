@@ -5,3 +5,37 @@ sources:
     schema: raw
     tables:
       - name: crypto_data
+        description: >
+          Raw cryptocurrency market data ingested from the CoinGecko API.
+          Each row represents a single coin snapshot at the time of ingestion.
+        columns:
+          - name: id
+            description: Unique CoinGecko coin identifier (e.g. "bitcoin").
+            tests:
+              - not_null
+              - unique
+
+          - name: symbol
+            description: Coin ticker symbol (e.g. "btc").
+            tests:
+              - not_null
+
+          - name: name
+            description: Human-readable coin name (e.g. "Bitcoin").
+            tests:
+              - not_null
+
+          - name: current_price
+            description: Current price in NZD at time of ingestion.
+            tests:
+              - not_null
+
+          - name: last_updated
+            description: Timestamp when CoinGecko last updated this coin's data.
+            tests:
+              - not_null
+
+          - name: ingested_at
+            description: Timestamp when this row was loaded into the data warehouse.
+            tests:
+              - not_null

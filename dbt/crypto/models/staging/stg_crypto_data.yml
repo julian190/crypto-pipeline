@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: stg_crypto_data
+    description: >
+      Cleaned and cast staging layer built from the raw crypto_data source.
+      Filters out rows with a null current_price and standardises column names
+      with NZD suffixes. Prices are cast to numeric; timestamp columns are cast
+      to timestamp.
+
+    columns:
+      - name: coin_id
+        description: Unique CoinGecko coin identifier (e.g. "bitcoin").
+        tests:
+          - not_null
+          - unique
+
+      - name: coin_symbol
+        description: Coin ticker symbol (e.g. "btc").
+        tests:
+          - not_null
+
+      - name: coin_name
+        description: Human-readable coin name (e.g. "Bitcoin").
+        tests:
+          - not_null
+
+      - name: current_price_nzd
+        description: Current price of the coin in NZD.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+
+      - name: low_24h_ndz
+        description: 24-hour low price in NZD. May be null for newly listed coins.
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+              config:
+                where: "low_24h_ndz is not null"
+
+      - name: high_24_nzd
+        description: 24-hour high price in NZD. May be null for newly listed coins.
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+              config:
+                where: "high_24_nzd is not null"
+
+      - name: price_change_24h_nzd
+        description: Absolute price change over the last 24 hours in NZD.
+
+      - name: market_cap_nzd
+        description: Total market capitalisation in NZD.
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+              config:
+                where: "market_cap_nzd is not null"
+
+      - name: market_cap_rank
+        description: CoinGecko market cap rank (1 = largest). Cast to integer.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+
+      - name: total_volume_nzd
+        description: 24-hour trading volume in NZD.
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+              config:
+                where: "total_volume_nzd is not null"
+
+      - name: price_change_pct_24h
+        description: Percentage price change over the last 24 hours. Can be negative.
+
+      - name: last_updated_at
+        description: Timestamp when CoinGecko last updated this coin (cast to timestamp).
+        tests:
+          - not_null
+
+      - name: ingested_at
+        description: Timestamp when this row was loaded into the data warehouse.
+        tests:
+          - not_null
