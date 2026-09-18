@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
-from datetime import datetime
+from datetime import datetime,timedelta
 import os
 import sys
 
@@ -22,9 +22,9 @@ def run_extract_and_load():
 
 with DAG(
     'crypto_pipeline',
-    start_date=datetime(2024, 1, 1),
-    schedule='@daily',
-    catchup=False
+    start_date = datetime(2026, 1, 1),
+    schedule = timedelta(minutes=5),
+    catchup = False
 ) as dag:
     
     extract_load = PythonOperator(

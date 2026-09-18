@@ -4,7 +4,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def extract_coingecko_data():
+def extract_coingecko_data() -> pd.DataFrame:
     response = requests.get(
     "https://api.coingecko.com/api/v3/coins/markets",
     params={"vs_currency": "nzd", "per_page": 100}

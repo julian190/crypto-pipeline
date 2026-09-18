@@ -10,7 +10,7 @@ def load_to_postgres(df : pd.DataFrame, table_name: str,schema: str, db_url: str
         with engine.connect() as connection:
             logging.info(f"Ensuring schema '{schema}' exists...")
             connection.execute(sa.text(f"CREATE SCHEMA IF NOT EXISTS {schema};"))
-        df.to_sql(table_name, engine,schema = schema, if_exists='replace', index=False)
+        df.to_sql(table_name, engine,schema = schema, if_exists='append', index=False)
         logging.info(f"Loaded {len(df)} rows into {table_name} table")
     except Exception as e:
         logging.error(f"Failed to load data into PostgreSQL: {e}")

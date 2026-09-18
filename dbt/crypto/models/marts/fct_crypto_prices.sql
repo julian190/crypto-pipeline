@@ -3,6 +3,7 @@ with staging as (
 )
 
 select
+
     coin_id,
     coin_symbol,
     coin_name,
@@ -20,3 +21,4 @@ select
     ingested_at
 
 from staging
+order by ingested_at desc

@@ -1,6 +1,20 @@
 # Crypto Pipeline
 
+The problem:
+Cryptocurrency prices change rapidly, making it difficult to monitor market movements manually. This project collects cryptocurrency market data every 5 minutes, stores historical snapshots, and transforms the data into analytics-ready tables that can be connected to BI tools such as Power BI or Tableau for near real-time reporting.
+
+Description:
 An end-to-end data pipeline that ingests live cryptocurrency market data from the CoinGecko API, loads it into PostgreSQL, transforms it with dbt, and orchestrates everything with Apache Airflow — all running locally via Docker.
+
+
+## Key Features
+
+- Automated crypto market data collection every 5 minutes
+- Historical snapshot storage for trend analysis
+- Data transformation using dbt best practices
+- Automated orchestration with Apache Airflow
+- Dockerized local development environment
+- Analytics-ready tables for Power BI and Tableau
 
 ## Architecture
 
@@ -64,10 +78,8 @@ crypto-pipeline/
 ## Data Model
 
 **raw.crypto_data** — raw API response, append-only, one row per coin per run
-
-**staging.stg_coin_prices** — cleaned and typed: nulls handled, columns renamed to snake_case, prices cast to numeric
-
-**marts.fct_crypto_prices** — business-ready: adds `price_change_pct_24h`, `is_top_10` flag, and `price_direction` (up/down/flat)
+**staging.stg_coin_prices** — cleaned and typed, full history retained (one row per coin per ingestion run)
+**marts.fct_crypto_prices** — latest snapshot per coin (deduplicated via DISTINCT ON), plus price_change_pct_24h, is_top_10, price_direction
 
 ## Prerequisites
 
@@ -104,7 +116,7 @@ AIR_FLOW_EMAIL=info@jmetias.nz
 docker compose up -d
 ```
 
-This starts PostgreSQL, runs Airflow migrations (`airflow-init`), then starts the Airflow webserver and scheduler. First run takes a few minutes while pip installs dependencies inside the containers.
+This starts PostgreSQL, runs Airflow migrations (`airflow-init`), then starts the Airflow webserver and scheduler. The first startup may take several minutes while dependencies are installed and Airflow services initialize.
 
 **4. Verify services are running**
 
@@ -114,19 +126,11 @@ docker compose ps
 
 All services should show `running` or `exited 0` for `airflow-init`.
 
-**5. Create the raw schema in Postgres**
-
-Connect to Postgres via DBeaver or psql and run:
-
-```sql
-CREATE SCHEMA IF NOT EXISTS raw;
-```
-
-**6. Open the Airflow UI**
+**5. Open the Airflow UI**
 
 Go to [http://localhost:8080](http://localhost:8080) and log in with the credentials from your `.env` file (`AIR_FLOW_USER` / `AIR_FLOW_PASSWORD`).
 
-**7. Run the pipeline**
+**6. Run the pipeline**
 
 Find the `crypto_pipeline` DAG, enable it, and trigger a manual run. The three tasks run in sequence:
 
@@ -163,5 +167,5 @@ docker compose down -v     # stops containers and deletes all data
 
 - Data source: [CoinGecko Public API](https://docs.coingecko.com) — no API key required
 - Currency: NZD (`vs_currency=nzd`)
-- The pipeline is scheduled to run daily (`@daily` in the DAG)
+- The DAG is configured to run automatically every 5 minutes but can also be triggered manually through the Airflow UI.
 - Each run appends a new snapshot to `raw.crypto_data` — historical prices accumulate over time

@@ -4,7 +4,7 @@ with source as (
 
 
 cleaned as (
-select 
+select  distinct on (id)
 id                    as coin_Id,
 symbol                as coin_symbol,
 name                  as coin_name,
@@ -26,10 +26,11 @@ CAST(total_volume as numeric)           as total_volume_nzd,
 cast(price_change_percentage_24h as numeric) as price_change_pct_24h,
 
     -- metadata
-cast(last_updated as timestamp)         as last_updated_at,
-ingested_at
+cast(last_updated as timestamp)       as last_updated_at,
+ingested_at 
 from source
 where current_price IS NOT NULL
+order by id, ingested_at desc
 )
 
 select * from cleaned

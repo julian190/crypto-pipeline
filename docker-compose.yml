@@ -8,8 +8,9 @@ services:
       POSTGRES_DB: "Crypto"
     ports:
       - "5432:5432"
+      # Known issue need to add the data to /var/lib/postgresql/data/18 
     volumes:
-      - ./Data/postgresData:/var/lib/postgresql/data/18
+      - ./Data/postgresData:/var/lib/postgresql/data/18 
 
   # Airflow Init (Runs migrations automatically and exits)
   airflow-init:
